@@ -56,7 +56,8 @@ class App extends React.Component {
       console.log('message received', message);
       if (message.connection) {
         this.setState({ connection: message.connection })
-      } else if (message.res) {
+      }
+      if (message.res) {
         this.setState({ response: message.res })
       }
     }
