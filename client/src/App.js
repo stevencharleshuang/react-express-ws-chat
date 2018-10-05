@@ -7,12 +7,15 @@ class App extends React.Component {
     super(props);
     this.state = {
       data: '',
-      status: 'WS Service is unavailable',
+      connection: 'WS Service is unavailable',
       input: '',
+      response: '',
     }
   }
+
+  // Form Handlers
   handleChange = (e) => {
-    console.log('handleChange: ', e.target.value)
+    // console.log('handleChange: ', e.target.value)
     this.setState({
       input: e.target.value,
     });
@@ -21,10 +24,11 @@ class App extends React.Component {
   handleSend = (e) => {
     e.preventDefault();
     let input = this.state.input
-    console.log('handleSend: ', this.state.input);
+    // console.log('handleSend: ', this.state.input);
     websocket.send(JSON.stringify(this.state.input));
   }
 
+  // Life Cycle Methods
   componentWillMount() {
     // Test Fetch
     const url = 'http://localhost:5000/api';
@@ -50,7 +54,11 @@ class App extends React.Component {
     websocket.onmessage = (e) => {
       let message = JSON.parse(e.data)
       console.log('message received', message);
-      this.setState({ status: message.status })
+      if (message.connection) {
+        this.setState({ connection: message.connection })
+      } else if (message.res) {
+        this.setState({ response: message.res })
+      }
     }
   }
 
@@ -58,7 +66,7 @@ class App extends React.Component {
     return (
       <div className="App">
         <h1>Welcome to the Web Socket Dome, Dave</h1>
-        <h2>Socket Server Status: {this.state.status}</h2>
+        <h2>Socket Server Connection Status: {this.state.connection}</h2>
         <p>Node Server Fetch Testing. Message = {this.state.data}</p>
 
         <form>
@@ -68,7 +76,7 @@ class App extends React.Component {
         <button onClick={this.handleSend}>Send</button>
         <h3>Incoming Message:</h3>
         <p>
-          {this.state.incoming}
+          {this.state.response}
         </p>
       </div>
     );

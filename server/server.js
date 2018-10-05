@@ -4,13 +4,15 @@ const express         = require('express'),
       logger          = require('morgan'),
       http            = require('http').Server(app),
       path            = require('path'),
-      uuidv4          = require('uuid/v4');
       PORT            = process.env.PORT || 5000,
       WebSocketServer = require('ws').Server,
       wss             = new WebSocketServer({
                           port: 8080,
                           clientTracking: true,
                         })
+
+const uuidv4 = require('uuid/v4'),
+      moment = require('moment')
 
 app.use(logger('dev'));
 
@@ -39,11 +41,13 @@ wss.on('connection', (ws, req) => {
   console.log('New Client Connected', user);
   !users[user] ? users[user] = { id: req.headers['sec-websocket-key'] } : null
   console.log({ users });
-  ws.send(JSON.stringify({ status: `${user} is connected!` }));
+  ws.send(JSON.stringify({ connection: `${user} is connected!` }));
 
   ws.on('message', (message) => {
+    let timestamp = moment().format('YYYYMMDDHHmmss');
     let parsedMsg = JSON.parse(message)
     console.log({ parsedMsg });
+    ws.send(JSON.stringify({ res: `WS Server received message from ${user} @ ${timestamp}` }))
   })
 });
 
