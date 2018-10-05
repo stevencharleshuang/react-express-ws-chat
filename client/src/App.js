@@ -7,7 +7,22 @@ class App extends React.Component {
     super(props);
     this.state = {
       data: '',
+      status: 'WS Service is unavailable',
+      input: '',
     }
+  }
+  handleChange = (e) => {
+    console.log('handleChange: ', e.target.value)
+    this.setState({
+      input: e.target.value,
+    });
+  }
+
+  handleSend = (e) => {
+    e.preventDefault();
+    let input = this.state.input
+    console.log('handleSend: ', this.state.input);
+    websocket.send(JSON.stringify(this.state.input));
   }
 
   componentWillMount() {
@@ -31,11 +46,11 @@ class App extends React.Component {
       });
   }
 
-
   componentDidMount() {
     websocket.onmessage = (e) => {
-      let status = JSON.parse(e.data)
-      console.log('message received', status);
+      let message = JSON.parse(e.data)
+      console.log('message received', message);
+      this.setState({ status: message.status })
     }
   }
 
@@ -43,7 +58,18 @@ class App extends React.Component {
     return (
       <div className="App">
         <h1>Welcome to the Web Socket Dome, Dave</h1>
+        <h2>Socket Server Status: {this.state.status}</h2>
         <p>Node Server Fetch Testing. Message = {this.state.data}</p>
+
+        <form>
+          <label>Server Comm:</label><br />
+          <input onChange={this.handleChange} name="message" type="text" placeholder="Message" autoFocus autoComplete="off" />
+        </form>
+        <button onClick={this.handleSend}>Send</button>
+        <h3>Incoming Message:</h3>
+        <p>
+          {this.state.incoming}
+        </p>
       </div>
     );
   }

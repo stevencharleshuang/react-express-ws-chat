@@ -40,6 +40,11 @@ wss.on('connection', (ws, req) => {
   !users[user] ? users[user] = { id: req.headers['sec-websocket-key'] } : null
   console.log({ users });
   ws.send(JSON.stringify({ status: `${user} is connected!` }));
+
+  ws.on('message', (message) => {
+    let parsedMsg = JSON.parse(message)
+    console.log({ parsedMsg });
+  })
 });
 
 
