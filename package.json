@@ -1,0 +1,39 @@
+{
+  "name": "react-express-ws-chat",
+  "version": "1.0.0",
+  "description": "A chat app using Node, Express, WebSockets and JWT",
+  "main": "server/server.js",
+  "scripts": {
+    "test": "test",
+    "client": "cd client && yarn start",
+    "server": "nodemon server/server.js",
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
+    "seed": "psql -f server/db/schema.sql && psql -f server/db/seed.sql",
+    "start": "cd server && node server.js",
+    "heroku-postbuild": "cd client/ && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stevencharleshuang/react-express-ws-chat.git"
+  },
+  "author": "Steven Charles Huang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stevencharleshuang/react-express-ws-chat/issues"
+  },
+  "homepage": "https://github.com/stevencharleshuang/react-express-ws-chat#readme",
+  "dependencies": {
+    "bcrypt": "^3.0.1",
+    "body-parser": "^1.18.3",
+    "concurrently": "^4.0.1",
+    "dotenv": "^6.0.0",
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.3.0",
+    "moment": "^2.22.2",
+    "morgan": "^1.9.1",
+    "nodemon": "^1.18.4",
+    "pg-promise": "^8.4.6",
+    "uuid": "^3.3.2",
+    "ws": "^6.0.0"
+  }
+}
