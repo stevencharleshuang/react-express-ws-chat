@@ -47,7 +47,7 @@ wss.on('connection', (ws, req) => {
     let timestamp = moment().format('YYYYMMDDHHmmss');
     let parsedMsg = JSON.parse(message)
     console.log({ parsedMsg });
-    ws.send(JSON.stringify({ res: `WS Server received message from ${user} @ ${timestamp}` }))
+    ws.send(JSON.stringify({ res: { user, timestamp, parsedMsg } }));
   })
 });
 

@@ -1,6 +1,9 @@
 import React from 'react';
 import websocket from './services/socketService';
 import './App.css';
+import MainChat from './components/MainChat';
+
+const chatHistory = [];
 
 class App extends React.Component {
   constructor(props) {
@@ -9,7 +12,7 @@ class App extends React.Component {
       data: '',
       connection: 'WS Service is unavailable',
       input: '',
-      response: '',
+      response: chatHistory,
     }
   }
 
@@ -26,6 +29,11 @@ class App extends React.Component {
     let input = this.state.input
     // console.log('handleSend: ', this.state.input);
     websocket.send(JSON.stringify(this.state.input));
+    this.clearChatInput();
+  }
+
+  clearChatInput = () => {
+    document.getElementById("chat-input").reset();
   }
 
   // Life Cycle Methods
@@ -58,27 +66,29 @@ class App extends React.Component {
         this.setState({ connection: message.connection })
       }
       if (message.res) {
-        this.setState({ response: message.res })
+        chatHistory.push(message.res);
+        this.setState({ response: chatHistory });
       }
     }
   }
 
   render() {
+    console.log('Client state: ', this.state);
+    console.log('Chat History: ', chatHistory);
+    let response = this.state.response;
     return (
       <div className="App">
         <h1>Welcome to the Web Socket Dome, Dave</h1>
         <h2>Socket Server Connection Status: {this.state.connection}</h2>
         <p>Node Server Fetch Testing. Message = {this.state.data}</p>
 
-        <form>
+        <form id="chat-input">
           <label>Server Comm:</label><br />
           <input onChange={this.handleChange} name="message" type="text" placeholder="Message" autoFocus autoComplete="off" />
         </form>
         <button onClick={this.handleSend}>Send</button>
         <h3>Incoming Message:</h3>
-        <p>
-          {this.state.response}
-        </p>
+        <MainChat chatHistory={chatHistory} />
       </div>
     );
   }
