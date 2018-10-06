@@ -42,6 +42,7 @@ wss.on('connection', (ws, req) => {
   !users[user] ? users[user] = { id: req.headers['sec-websocket-key'] } : null
   console.log({ users });
   ws.send(JSON.stringify({ connection: `${user} is connected!` }));
+  ws.send(JSON.stringify({ users }));
 
   ws.on('message', (message) => {
     let timestamp = moment().format('YYYYMMDDHHmmss');

@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default function MainChat(props) {
-  console.log('MainChat Props:', props);
+  // console.log('MainChat Props:', props);
   let chatHistory = props.chatHistory;
   let chatBoard = chatHistory.map((msg, i) => {
     return (

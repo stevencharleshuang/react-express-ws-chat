@@ -1,9 +1,11 @@
 import React from 'react';
 import websocket from './services/socketService';
 import './App.css';
+import OnlineUsers from './components/OnlineUsers';
 import MainChat from './components/MainChat';
 
 const chatHistory = [];
+const users = [];
 
 class App extends React.Component {
   constructor(props) {
@@ -11,6 +13,7 @@ class App extends React.Component {
     this.state = {
       data: '',
       connection: 'WS Service is unavailable',
+      users: users,
       input: '',
       response: chatHistory,
     }
@@ -69,6 +72,13 @@ class App extends React.Component {
         chatHistory.push(message.res);
         this.setState({ response: chatHistory });
       }
+      if (message.users) {
+        console.log('message.users', message.users);
+        for (let user in message.users) {
+          users.push(message.users[user].id);
+        }
+        this.setState({ response: users });
+      }
     }
   }
 
@@ -76,19 +86,23 @@ class App extends React.Component {
     console.log('Client state: ', this.state);
     console.log('Chat History: ', chatHistory);
     let response = this.state.response;
+    let onlineUsers = this.state.users
     return (
       <div className="App">
         <h1>Welcome to the Web Socket Dome, Dave</h1>
         <h2>Socket Server Connection Status: {this.state.connection}</h2>
         <p>Node Server Fetch Testing. Message = {this.state.data}</p>
+        <h3>Online Users:</h3>
+        <OnlineUsers onlineUsers={onlineUsers} />
+
+        <h3>Messages:</h3>
+        <MainChat chatHistory={chatHistory} />
 
         <form id="chat-input">
           <label>Server Comm:</label><br />
           <input onChange={this.handleChange} name="message" type="text" placeholder="Message" autoFocus autoComplete="off" />
         </form>
         <button onClick={this.handleSend}>Send</button>
-        <h3>Incoming Message:</h3>
-        <MainChat chatHistory={chatHistory} />
       </div>
     );
   }
