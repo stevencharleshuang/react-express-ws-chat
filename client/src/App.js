@@ -13,7 +13,7 @@ class App extends React.Component {
     this.state = {
       data: '',
       connection: 'WS Service is unavailable',
-      users: users,
+      users,
       input: '',
       response: chatHistory,
     }
@@ -37,6 +37,35 @@ class App extends React.Component {
 
   clearChatInput = () => {
     document.getElementById("chat-input").reset();
+  }
+
+  /**
+   * handleServerMessages
+   * 
+   * @param {object} msg: a response message from the socket server
+   */
+  handleServerMessages = (msg) => {
+    // If incoming message type is 'connection', 
+    // set state of connection to received connection status
+    if (msg.connection) {
+      this.setState({ connection: msg.connection })
+    }
+    // If incoming message type is 'res', 
+    // push response to chatHistory, 
+    // set state of response to updated chat history
+    if (msg.res) {
+      chatHistory.push(msg.res);
+      this.setState({ response: chatHistory });
+    }
+    // If incoming message type is users
+    // iterate through list of users, push to users array, set state of users to users
+    if (msg.users) {
+      console.log('msg.users', msg.users);
+      for (let user in msg.users) {
+        users.push(msg.users[user].id);
+      }
+      this.setState({ users });
+    }
   }
 
   // Life Cycle Methods
@@ -65,26 +94,13 @@ class App extends React.Component {
     websocket.onmessage = (e) => {
       let message = JSON.parse(e.data)
       console.log('message received', message);
-      if (message.connection) {
-        this.setState({ connection: message.connection })
-      }
-      if (message.res) {
-        chatHistory.push(message.res);
-        this.setState({ response: chatHistory });
-      }
-      if (message.users) {
-        console.log('message.users', message.users);
-        for (let user in message.users) {
-          users.push(message.users[user].id);
-        }
-        this.setState({ response: users });
-      }
+      this.handleServerMessages(message);
     }
   }
 
   render() {
-    console.log('Client state: ', this.state);
-    console.log('Chat History: ', chatHistory);
+    // console.log('Client state: ', this.state);
+    // console.log('Chat History: ', chatHistory);
     let response = this.state.response;
     let onlineUsers = this.state.users
     return (

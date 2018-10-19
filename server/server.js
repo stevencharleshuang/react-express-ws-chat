@@ -38,17 +38,19 @@ let users = new Set();
 // Begin WS
 wss.on('connection', (ws, req) => {
   let user = uuidv4();
+  let username = '';
+  let id = req.headers['sec-websocket-key'];
   console.log('New Client Connected', user);
-  !users[user] ? users[user] = { id: req.headers['sec-websocket-key'] } : null
+  !users[user] ? users[user] = { id } : null
   console.log({ users });
   ws.send(JSON.stringify({ connection: `${user} is connected!` }));
   ws.send(JSON.stringify({ users }));
 
   ws.on('message', (message) => {
     let timestamp = moment().format('YYYYMMDDHHmmss');
-    let parsedMsg = JSON.parse(message)
+    let parsedMsg = JSON.parse(message);
     console.log({ parsedMsg });
-    ws.send(JSON.stringify({ res: { user, timestamp, parsedMsg } }));
+    ws.send(JSON.stringify({ res: { user, username, timestamp, parsedMsg } }));
   })
 });
 
