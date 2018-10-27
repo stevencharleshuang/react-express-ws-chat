@@ -42,6 +42,9 @@ class App extends React.Component {
   /**
    * handleServerMessages
    * 
+   * This method accepts a message type from the socket server, 
+   * then performs various actions depending on what the message type is.
+   * 
    * @param {object} msg: a response message from the socket server
    */
   handleServerMessages = (msg) => {
@@ -58,7 +61,9 @@ class App extends React.Component {
       this.setState({ response: chatHistory });
     }
     // If incoming message type is users
-    // iterate through list of users, push to users array, set state of users to users
+    // iterate through list of users, 
+    // push to users array, 
+    // set state of users to users
     if (msg.users) {
       console.log('msg.users', msg.users);
       for (let user in msg.users) {
@@ -116,7 +121,13 @@ class App extends React.Component {
 
         <form id="chat-input">
           <label>Server Comm:</label><br />
-          <input onChange={this.handleChange} name="message" type="text" placeholder="Message" autoFocus autoComplete="off" />
+          <input 
+            onChange={this.handleChange} 
+            name="message" 
+            type="text" 
+            placeholder="Message" 
+            autoFocus 
+            autoComplete="off" />
         </form>
         <button onClick={this.handleSend}>Send</button>
       </div>
