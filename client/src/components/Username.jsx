@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default function Username(props) {
-  console.log('Username props:', props);
+  // console.log('Username props:', props);
   return(
     <div className="username-form">
       <form>
@@ -21,7 +21,7 @@ export default function Username(props) {
           onChange={this.handleOnChange}
         /> */}
         <br />
-        <button onClick={props.handleUsernameSubmit} data-id="login">Log In</button>
+        <button onClick={props.handleUsernameSubmit} data-id="submit">Submit</button>
       </form>
     </div>
   );

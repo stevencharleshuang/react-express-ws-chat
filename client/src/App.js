@@ -4,6 +4,7 @@ import './App.css';
 import OnlineUsers from './components/OnlineUsers';
 import MainChat from './components/MainChat';
 import Username from './components/Username';
+import ChatMessage from './components/ChatMessage';
 
 const chatHistory = [];
 const users = [];
@@ -165,17 +166,10 @@ class App extends React.Component {
         <h3>Messages:</h3>
         <MainChat chatHistory={chatHistory} />
 
-        <form id="chat-input">
-          <label>Server Comm:</label><br />
-          <input 
-            onChange={this.handleOnChange} 
-            name="message" 
-            type="text" 
-            placeholder="Message" 
-            autoFocus 
-            autoComplete="off" />
-        </form>
-        <button onClick={this.handleSend}>Send</button>
+        <ChatMessage 
+          handleOnChange={this.handleOnChange}
+          handleSend={this.handleSend}
+        />
       </div>
     );
   }

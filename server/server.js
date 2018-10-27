@@ -49,7 +49,7 @@ wss.on('connection', (ws, req) => {
   ws.on('message', (message) => {
     let timestamp = moment().format('YYYYMMDDHHmmss');
     let parsedMsg = JSON.parse(message);
-    console.log({ parsedMsg });
+    console.log('client sent a message', { parsedMsg });
     ws.send(JSON.stringify({ res: { user, username, timestamp, parsedMsg } }));
   })
 });
