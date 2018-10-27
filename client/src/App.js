@@ -26,6 +26,7 @@ class App extends React.Component {
   handleUsernameSubmit = (e) => {
     e.preventDefault();
     console.log('User submitted Username!', this.state.username);
+    websocket.send(JSON.stringify(this.state.username));
     // this.handleSubmit(this.state);
   }
 
@@ -74,7 +75,9 @@ class App extends React.Component {
     e.preventDefault();
     let input = this.state.input
     // console.log('handleSend: ', this.state.input);
-    websocket.send(JSON.stringify(this.state.message));
+    websocket.send(JSON.stringify({
+      type: 'chatMsg',
+      body: this.state.message}));
     this.clearChatInput();
   }
 

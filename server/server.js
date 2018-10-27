@@ -46,12 +46,20 @@ wss.on('connection', (ws, req) => {
   ws.send(JSON.stringify({ connection: `${user} is connected!` }));
   ws.send(JSON.stringify({ users }));
 
+  ws.on('username', (username) => {
+    console.log('client sent a username', username);
+  });
+
   ws.on('message', (message) => {
     let timestamp = moment().format('YYYYMMDDHHmmss');
     let parsedMsg = JSON.parse(message);
+    let type = parsedMsg.type
+    let body = parsedMsg.body
     console.log('client sent a message', { parsedMsg });
-    ws.send(JSON.stringify({ res: { user, username, timestamp, parsedMsg } }));
-  })
+    if (type === 'chatMsg') {
+      ws.send(JSON.stringify({ res: { user, username, timestamp, body } }));
+    }
+  });
 });
 
 
