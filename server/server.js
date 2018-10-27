@@ -38,7 +38,7 @@ let users = new Set();
 // Begin WS
 wss.on('connection', (ws, req) => {
   let user = uuidv4();
-  let username = '';
+  let username = 'guest';
   let id = req.headers['sec-websocket-key'];
   console.log('New Client Connected', user);
   !users[user] ? users[user] = { id } : null
