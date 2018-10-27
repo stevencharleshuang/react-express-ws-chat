@@ -3,6 +3,7 @@ import websocket from './services/socketService';
 import './App.css';
 import OnlineUsers from './components/OnlineUsers';
 import MainChat from './components/MainChat';
+import Username from './components/Username';
 
 const chatHistory = [];
 const users = [];
@@ -13,17 +14,58 @@ class App extends React.Component {
     this.state = {
       data: '',
       connection: 'WS Service is unavailable',
+      username: '',
       users,
-      input: '',
+      message: '',
       response: chatHistory,
     }
   }
 
   // Form Handlers
-  handleChange = (e) => {
-    // console.log('handleChange: ', e.target.value)
+  handleUsernameSubmit = (e) => {
+    e.preventDefault();
+    console.log('User submitted Username!', this.state.username);
+    // this.handleSubmit(this.state);
+  }
+
+  handleSubmit = (formData) => {
+
+    /** ToDo: Implement with Tokens
+     const url = '/api/auth/login';
+     fetch(url, {
+       method: 'POST',
+       body: JSON.stringify(formData),
+       headers: {
+         'Content-Type': 'application/json; charset=utf-8',
+         Accept: 'application/json'
+        }
+      })
+      .then(res => res.json())
+      .then(response => {
+        // console.log('Success:', (response));
+        TokenService.save(response.token);
+        UserService.save(response.user, response.user.id, response.user.username);
+        this.setState((prevState) => ({
+          authenticated: !prevState.authenticated,
+          loggedInUser: response.user,
+          redirect: !prevState.redirect
+        }));
+      })
+      .catch(error => {
+        console.error('Error:', error)
+        this.setState((prevState) => ({
+          error: !prevState.error,
+        }))
+      });
+    */ 
+  }
+
+  handleOnChange = (e) => {
+    // console.log('handleOnChange: ', e.target.value)
+    const value = e.target.value
+    const name = e.target.name;
     this.setState({
-      input: e.target.value,
+      [name]: value
     });
   }
 
@@ -31,7 +73,7 @@ class App extends React.Component {
     e.preventDefault();
     let input = this.state.input
     // console.log('handleSend: ', this.state.input);
-    websocket.send(JSON.stringify(this.state.input));
+    websocket.send(JSON.stringify(this.state.message));
     this.clearChatInput();
   }
 
@@ -113,6 +155,10 @@ class App extends React.Component {
         <h1>Welcome to the Web Socket Dome, Dave</h1>
         <h2>Socket Server Connection Status: {this.state.connection}</h2>
         <p>Node Server Fetch Testing. Message = {this.state.data}</p>
+        <Username 
+          handleOnChange={this.handleOnChange}
+          handleUsernameSubmit={this.handleUsernameSubmit}
+        />
         <h3>Online Users:</h3>
         <OnlineUsers onlineUsers={onlineUsers} />
 
@@ -122,7 +168,7 @@ class App extends React.Component {
         <form id="chat-input">
           <label>Server Comm:</label><br />
           <input 
-            onChange={this.handleChange} 
+            onChange={this.handleOnChange} 
             name="message" 
             type="text" 
             placeholder="Message" 
