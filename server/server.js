@@ -56,6 +56,10 @@ wss.on('connection', (ws, req) => {
     let type = parsedMsg.type
     let body = parsedMsg.body
     console.log('client sent a message', { parsedMsg });
+    if (type === 'username') {
+      console.log('Client submitted username');
+      username = body;
+    }
     if (type === 'chatMsg') {
       ws.send(JSON.stringify({ res: { user, username, timestamp, body } }));
     }
