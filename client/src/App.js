@@ -8,6 +8,7 @@ import ChatMessage from './components/ChatMessage';
 
 const chatHistory = [];
 const users = [];
+// const users = new Set();
 
 class App extends React.Component {
   constructor(props) {
@@ -34,7 +35,6 @@ class App extends React.Component {
   }
 
   handleSubmit = (formData) => {
-
     /** ToDo: Implement with Tokens
      const url = '/api/auth/login';
      fetch(url, {
@@ -117,7 +117,12 @@ class App extends React.Component {
     if (msg.users) {
       console.log('msg.users', msg.users);
       for (let user in msg.users) {
-        users.push(msg.users[user].id);
+        // if (!users[user]) {
+        //   users[user] = msg.users[user];
+        // } 
+        if (users.indexOf(user === -1)) {
+          users.push(`Username: ${msg.users[user].username}, UserID: ${msg.users[user].id}`);
+        }
       }
       this.setState({ users });
     }
@@ -158,6 +163,7 @@ class App extends React.Component {
     // console.log('Chat History: ', chatHistory);
     let response = this.state.response;
     let onlineUsers = this.state.users
+    console.log({onlineUsers});
     return (
       <div className="App">
         <h1>Welcome to the Web Socket Dome, Dave</h1>

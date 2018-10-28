@@ -1,4 +1,3 @@
-
 const express         = require('express'),
       app             = express(),
       logger          = require('morgan'),
@@ -34,34 +33,35 @@ app.use((err, req, res, next) => {
 });
 
 let users = new Set();
-
+let clients = [];
 // Begin WS
 wss.on('connection', (ws, req) => {
-  let user = uuidv4();
+  let userID = uuidv4();
   let username = 'Unsung Hero';
   let id = req.headers['sec-websocket-key'];
-  console.log('New Client Connected', user);
-  !users[user] ? users[user] = { id } : null
+  console.log('New Client Connected', userID);
+  !users[userID] ? users[userID] = { id, username, userID } : null
   console.log({ users });
-  ws.send(JSON.stringify({ connection: `${user} is connected!` }));
+  ws.send(JSON.stringify({ connection: `${userID} is connected!` }));
   ws.send(JSON.stringify({ users }));
 
-  ws.on('username', (username) => {
-    console.log('client sent a username', username);
-  });
+  // clients.push(ws);
+  // clients.forEach((client) => {
+  //   client.send(JSON.stringify({ users }));
+  // });
 
   ws.on('message', (message) => {
     let timestamp = moment().format('YYYYMMDDHHmmss');
     let parsedMsg = JSON.parse(message);
-    let type = parsedMsg.type
-    let body = parsedMsg.body
+    let type = parsedMsg.type;
+    let body = parsedMsg.body;
     console.log('client sent a message', { parsedMsg });
     if (type === 'username') {
       console.log('Client submitted username');
       username = body;
     }
     if (type === 'chatMsg') {
-      ws.send(JSON.stringify({ res: { user, username, timestamp, body } }));
+      ws.send(JSON.stringify({ res: { userID, username, timestamp, body } }));
     }
   });
 });

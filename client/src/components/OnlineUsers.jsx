@@ -1,9 +1,9 @@
 import React from 'react';
 
 export default function OnlineUsers(props) {
-  let users = props.users;
-  // console.log('OnlineUsers props: ', props);
-  let currentUsers = props.onlineUsers.map((user) => {
+  let users = props.onlineUsers;
+  console.log('OnlineUsers props: ', props);
+  let currentUsers = users.map((user) => {
     return (
       <li key={user}>{user}</li>
     );
