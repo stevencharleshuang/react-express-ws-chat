@@ -47,6 +47,7 @@ wss.on('connection', (ws, req) => {
   // ws.send(JSON.stringify({ users }));
 
   clients.push(ws);
+  // something here causing a crash in sockets server
   clients.forEach((client) => {
     client.send(JSON.stringify({ users }));
   });

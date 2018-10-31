@@ -8,7 +8,7 @@ import ChatMessage from './components/ChatMessage';
 import ManualPing from './components/ManualPing';
 
 const chatHistory = [];
-const users = [];
+let users = [];
 // const users = new Set();
 
 class App extends React.Component {
@@ -117,6 +117,7 @@ class App extends React.Component {
     // set state of users to users
     if (msg.users) {
       console.log('msg.users', msg.users);
+      users = [];
       for (let user in msg.users) {
         // if (!users[user]) {
         //   users[user] = msg.users[user];
@@ -192,6 +193,7 @@ class App extends React.Component {
           handleOnChange={this.handleOnChange}
           handleSend={this.handleSend}
         />
+
         {/* Testing Only! TBR! */}
         <br />
         <ManualPing handleManualPing={this.handleManualPing}/>
