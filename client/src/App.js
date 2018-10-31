@@ -5,6 +5,7 @@ import OnlineUsers from './components/OnlineUsers';
 import MainChat from './components/MainChat';
 import Username from './components/Username';
 import ChatMessage from './components/ChatMessage';
+import ManualPing from './components/ManualPing';
 
 const chatHistory = [];
 const users = [];
@@ -128,6 +129,14 @@ class App extends React.Component {
     }
   }
 
+  handleManualPing = () => {
+    console.log('Client handled Manual Ping!');
+    websocket.send(JSON.stringify({
+      type: 'manualPing',
+      body: this.state.username
+    }));
+  }
+
   // Life Cycle Methods
   componentWillMount() {
     // Test Fetch
@@ -169,10 +178,10 @@ class App extends React.Component {
         <h1>Welcome to the Web Socket Dome, Dave</h1>
         <h2>Socket Server Connection Status: {this.state.connection}</h2>
         <p>Node Server Fetch Testing. Message = {this.state.data}</p>
-        <Username 
-          handleOnChange={this.handleOnChange}
-          handleUsernameSubmit={this.handleUsernameSubmit}
-        />
+          <Username 
+            handleOnChange={this.handleOnChange}
+            handleUsernameSubmit={this.handleUsernameSubmit}
+          />
         <h3>Online Users:</h3>
         <OnlineUsers onlineUsers={onlineUsers} />
 
@@ -183,6 +192,9 @@ class App extends React.Component {
           handleOnChange={this.handleOnChange}
           handleSend={this.handleSend}
         />
+        {/* Testing Only! TBR! */}
+        <br />
+        <ManualPing handleManualPing={this.handleManualPing}/>
       </div>
     );
   }

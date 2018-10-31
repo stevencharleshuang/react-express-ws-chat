@@ -34,6 +34,7 @@ app.use((err, req, res, next) => {
 
 let users = new Set();
 let clients = [];
+let chatMessages = [];
 // Begin WS
 wss.on('connection', (ws, req) => {
   let userID = uuidv4();
@@ -45,7 +46,7 @@ wss.on('connection', (ws, req) => {
   ws.send(JSON.stringify({ connection: `${userID} is connected!` }));
   ws.send(JSON.stringify({ users }));
 
-  // clients.push(ws);
+  clients.push(ws);
   // clients.forEach((client) => {
   //   client.send(JSON.stringify({ users }));
   // });
@@ -57,11 +58,17 @@ wss.on('connection', (ws, req) => {
     let body = parsedMsg.body;
     console.log('client sent a message', { parsedMsg });
     if (type === 'username') {
-      console.log('Client submitted username');
+      console.log('Socks Server: Client submitted username =>', body);
       username = body;
     }
     if (type === 'chatMsg') {
-      ws.send(JSON.stringify({ res: { userID, username, timestamp, body } }));
+      console.log('Socks Server: Client sent a chat message =>', body);
+      clients.forEach((user) => {
+        user.send(JSON.stringify({ res: { userID, username, timestamp, body } }));
+      });
+    }
+    if (type === 'manualPing') {
+      console.log('Socks Server: Received manual ping from user =>', body);
     }
   });
 });
