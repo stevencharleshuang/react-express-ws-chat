@@ -44,12 +44,12 @@ wss.on('connection', (ws, req) => {
   !users[userID] ? users[userID] = { id, username, userID } : null
   console.log({ users });
   ws.send(JSON.stringify({ connection: `${userID} is connected!` }));
-  ws.send(JSON.stringify({ users }));
+  // ws.send(JSON.stringify({ users }));
 
   clients.push(ws);
-  // clients.forEach((client) => {
-  //   client.send(JSON.stringify({ users }));
-  // });
+  clients.forEach((client) => {
+    client.send(JSON.stringify({ users }));
+  });
 
   ws.on('message', (message) => {
     let timestamp = moment().format('YYYYMMDDHHmmss');
@@ -63,8 +63,8 @@ wss.on('connection', (ws, req) => {
     }
     if (type === 'chatMsg') {
       console.log('Socks Server: Client sent a chat message =>', body);
-      clients.forEach((user) => {
-        user.send(JSON.stringify({ res: { userID, username, timestamp, body } }));
+      clients.forEach((client) => {
+        client.send(JSON.stringify({ res: { userID, username, timestamp, body } }));
       });
     }
     if (type === 'manualPing') {
