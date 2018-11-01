@@ -41,16 +41,21 @@ wss.on('connection', (ws, req) => {
   let username = 'Unsung Hero';
   let id = req.headers['sec-websocket-key'];
   console.log('New Client Connected', userID);
-  !users[userID] ? users[userID] = { id, username, userID } : null
+  !users[userID] ? users[userID] = { id, username, userID, ws } : null
   console.log({ users });
   ws.send(JSON.stringify({ connection: `${userID} is connected!` }));
   // ws.send(JSON.stringify({ users }));
 
   clients.push(ws);
   // something here causing a crash in sockets server
-  clients.forEach((client) => {
-    client.send(JSON.stringify({ users }));
-  });
+  // clients.forEach((client) => {
+  //   client.send(JSON.stringify({ users }));
+  // });
+
+  for (let user in users) {
+    console.log(user);
+    users[user].ws.send(JSON.stringify({ message: 'hi' }));
+  }
 
   ws.on('message', (message) => {
     let timestamp = moment().format('YYYYMMDDHHmmss');
@@ -63,10 +68,14 @@ wss.on('connection', (ws, req) => {
       username = body;
     }
     if (type === 'chatMsg') {
+      chatMessages.push(body);
       console.log('Socks Server: Client sent a chat message =>', body);
-      clients.forEach((client) => {
-        client.send(JSON.stringify({ res: { userID, username, timestamp, body } }));
-      });
+      // clients.forEach((client) => {
+      //   client.send(JSON.stringify({ res: { userID, username, timestamp, body } }));
+      // });
+      for (let user of users) {
+        users[user].ws.send(JSON.stringify({ res: { chatMessages } }));
+      }
     }
     if (type === 'manualPing') {
       console.log('Socks Server: Received manual ping from user =>', body);
