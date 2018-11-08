@@ -44,7 +44,6 @@ wss.on('connection', (ws, req) => {
   !users[userID] ? users[userID] = { id, username, userID, ws } : null
   console.log({ users });
   ws.send(JSON.stringify({ connection: `${userID} is connected!` }));
-  // ws.send(JSON.stringify({ users }));
 
   clients.push(ws);
   // something here causing a crash in sockets server
@@ -53,8 +52,7 @@ wss.on('connection', (ws, req) => {
   // });
 
   for (let user in users) {
-    console.log(user);
-    users[user].ws.send(JSON.stringify({ message: 'hi' }));
+    users[user].ws.send(JSON.stringify(users[user]));
   }
 
   ws.on('message', (message) => {
