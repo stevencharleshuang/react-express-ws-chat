@@ -8,8 +8,6 @@ import ChatMessage from './components/ChatMessage';
 import ManualPing from './components/ManualPing';
 
 const chatHistory = [];
-// let users = [];
-let users = new Set();
 
 class App extends React.Component {
   constructor(props) {
@@ -18,7 +16,7 @@ class App extends React.Component {
       data: '',
       connection: 'WS Service is unavailable',
       username: '',
-      users,
+      users: [],
       message: '',
       response: chatHistory,
     }
@@ -117,15 +115,12 @@ class App extends React.Component {
     // set state of users to users
     if (msg.users) {
       console.log('msg.users', msg.users);
-      // users = [];
-      for (let user in msg.users) {
-        if (!users[user]) {
-          users[user] = msg.users[user];
-        } 
-        // if (users.indexOf(user === -1)) {
-        //   users.push(`Username: ${msg.users[user].username}, UserID: ${msg.users[user].id}`);
-        // }
-      }
+      let users = [];
+      msg.users.forEach((user) => {
+        if (users.indexOf(user === -1)) {
+          users.push(user);
+        }
+      });
       this.setState({ users });
     }
   }
@@ -184,7 +179,7 @@ class App extends React.Component {
             handleUsernameSubmit={this.handleUsernameSubmit}
           />
         <h3>Online Users:</h3>
-        {/* <OnlineUsers onlineUsers={onlineUsers} /> */}
+        <OnlineUsers onlineUsers={onlineUsers} />
 
         <h3>Messages:</h3>
         <MainChat chatHistory={chatHistory} />

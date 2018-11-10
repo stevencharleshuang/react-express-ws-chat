@@ -33,27 +33,33 @@ app.use((err, req, res, next) => {
 });
 
 let users = new Set();
-let clients = [];
 let chatMessages = [];
+
 // Begin WS
 wss.on('connection', (ws, req) => {
   let userID = uuidv4();
-  let username = 'Unsung Hero';
   let id = req.headers['sec-websocket-key'];
-  console.log('New Client Connected', userID);
+  let username = `Unsung Hero ${id}`;
+  let usernames = [];
+  console.log({usernames});
   !users[userID] ? users[userID] = { id, username, userID, ws } : null
   console.log({ users });
   ws.send(JSON.stringify({ connection: `${userID} is connected!` }));
 
-  clients.push(ws);
-  // something here causing a crash in sockets server
-  // clients.forEach((client) => {
-  //   client.send(JSON.stringify({ users }));
-  // });
-
-  for (let user in users) {
-    users[user].ws.send(JSON.stringify(users[user]));
+  const broadcastUsers = (msg) => {
+    for (let user in users) {
+      users[user].ws.send(JSON.stringify({users: usernames}));
+    }
   }
+  // something here causing a crash in sockets server
+  for (let user in users) {
+    console.log('users info', users[user].username);
+    usernames.push(users[user].username);
+    // users[user].ws.send(JSON.stringify({users: usernames}));
+    // console.log({usernames});
+    broadcastUsers(usernames);
+  }
+
 
   ws.on('message', (message) => {
     let timestamp = moment().format('YYYYMMDDHHmmss');
