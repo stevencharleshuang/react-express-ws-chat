@@ -32,10 +32,13 @@ app.use((err, req, res, next) => {
   res.status(500).send(`I'm sorry, Dave. I'm afraid I can't do that.`);
 });
 
+
+////////////////////////////////////////////////////////////////////////////////
+// Begin WS
+
 let users = new Set();
 let chatMessages = [];
 
-// Begin WS
 wss.on('connection', (ws, req) => {
   let userID = uuidv4();
   let id = req.headers['sec-websocket-key'];
@@ -46,40 +49,51 @@ wss.on('connection', (ws, req) => {
   console.log({ users });
   ws.send(JSON.stringify({ connection: `${userID} is connected!` }));
 
-  const broadcastUsers = (msg) => {
+  /**
+   * broadcastUsers
+   * 
+   * Takes an array of usernames from the users set and broadcasts to all users
+   * 
+   * @param {array} msg: an array of usernames to broadcast 
+   */
+  const broadcast = (type, msg) => {
     for (let user in users) {
-      users[user].ws.send(JSON.stringify({users: usernames}));
+      if (type === 'users') {
+        users[user].ws.send(JSON.stringify({ users: msg }));
+      }
+      if (type === 'res') {
+        users[user].ws.send(JSON.stringify({ res: msg }));
+      }
     }
   }
-  // something here causing a crash in sockets server
+
+  // something here causing a crash in sockets server when client refreshes page
+  // On new connection to socket server, will call a broadcast to all currently 
+  // connected users, updating their "Online Users" component
   for (let user in users) {
-    console.log('users info', users[user].username);
     usernames.push(users[user].username);
-    // users[user].ws.send(JSON.stringify({users: usernames}));
-    // console.log({usernames});
-    broadcastUsers(usernames);
+    broadcast('users', usernames);
   }
 
-
+  // Responses to clients sending messages to socket server
   ws.on('message', (message) => {
     let timestamp = moment().format('YYYYMMDDHHmmss');
     let parsedMsg = JSON.parse(message);
     let type = parsedMsg.type;
     let body = parsedMsg.body;
+
     console.log('client sent a message', { parsedMsg });
+
+    // Conditionals to differentiate between types of client>server interactions
     if (type === 'username') {
       console.log('Socks Server: Client submitted username =>', body);
       username = body;
     }
     if (type === 'chatMsg') {
-      chatMessages.push(body);
+      chatMessages.push(`${timestamp}: ${body}`);
       console.log('Socks Server: Client sent a chat message =>', body);
-      // clients.forEach((client) => {
-      //   client.send(JSON.stringify({ res: { userID, username, timestamp, body } }));
-      // });
-      for (let user of users) {
-        users[user].ws.send(JSON.stringify({ res: { chatMessages } }));
-      }
+      console.log({ chatMessages })
+      broadcast('res', chatMessages);
     }
     if (type === 'manualPing') {
       console.log('Socks Server: Received manual ping from user =>', body);
@@ -89,6 +103,7 @@ wss.on('connection', (ws, req) => {
 
 
 // End WS
+////////////////////////////////////////////////////////////////////////////////
 
 app.listen(PORT, () => {
   console.log(`Server up and running! Port: ${PORT} Env: ${app.get('env')}`);

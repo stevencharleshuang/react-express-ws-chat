@@ -7,7 +7,7 @@ import Username from './components/Username';
 import ChatMessage from './components/ChatMessage';
 import ManualPing from './components/ManualPing';
 
-const chatHistory = [];
+let chatHistory = [];
 
 class App extends React.Component {
   constructor(props) {
@@ -18,7 +18,7 @@ class App extends React.Component {
       username: '',
       users: [],
       message: '',
-      response: chatHistory,
+      chatHistory,
     }
   }
 
@@ -97,6 +97,7 @@ class App extends React.Component {
    * @param {object} msg: a response message from the socket server
    */
   handleServerMessages = (msg) => {
+    console.log('message received from server type: ', msg);
     // If incoming message type is 'connection', 
     // set state of connection to received connection status
     if (msg.connection) {
@@ -106,8 +107,9 @@ class App extends React.Component {
     // push response to chatHistory, 
     // set state of response to updated chat history
     if (msg.res) {
-      chatHistory.push(msg.res);
-      this.setState({ response: chatHistory });
+      console.log('received response from server res:', msg.res);
+      chatHistory = msg.res;
+      this.setState({ chatHistory });
     }
     // If incoming message type is users
     // iterate through list of users, 
@@ -166,7 +168,6 @@ class App extends React.Component {
   render() {
     console.log('Client state: ', this.state);
     // console.log('Chat History: ', chatHistory);
-    let response = this.state.response;
     let onlineUsers = this.state.users
     console.log({onlineUsers});
     return (
@@ -182,7 +183,7 @@ class App extends React.Component {
         <OnlineUsers onlineUsers={onlineUsers} />
 
         <h3>Messages:</h3>
-        <MainChat chatHistory={chatHistory} />
+        <MainChat chatHistory={this.state.chatHistory} />
 
         <ChatMessage 
           handleOnChange={this.handleOnChange}
